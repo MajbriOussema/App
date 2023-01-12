@@ -1,0 +1,22 @@
+<html>
+    <head>
+		<title>Banque</title>
+        <link rel="stylesheet" href="static/styles.css">
+    </head>
+    <body>
+        <h2>Customer registration</h2>
+    <div class="container" id="container">
+        <form action="/register" method="post" name="register">
+            <h3>Username</h1>
+            <input type="text" placeholder="username" name="username"/>
+            <h3>Password</h1>
+            <input type="password" placeholder="password" name="password"/>
+            <button>Confirm</button>
+            <p style="color:black">{{registerresponse}}</p>
+
+        </form>
+    </div>
+    <h2><a class="requrl" href="/login"><u>Login now!</u></a></h2>
+
+    </body>
+</html>
