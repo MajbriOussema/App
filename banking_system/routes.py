@@ -2,6 +2,8 @@ from flask import render_template, request, json, Response,flash,redirect,sessio
 from banking_system import app, db
 from flask import url_for
 from banking_system.model import *
+import uuid
+
 
 @app.route('/',methods=['GET','POST'])
 def home():
@@ -27,10 +29,10 @@ def login():
         formData['username'] = username
         formData['password'] = password
         if username and password:
-            hashpassword = UserRegistration.hashing(password)
-            user_obj = UserRegistration.query.filter_by(username=username,password=hashpassword).first()            
+            hashpassword = Account.hashing(password)
+            user_obj = Account.query.filter_by(username=username,password=hashpassword).first()            
             if user_obj:
-                user_obj = UserRegistration.query.filter_by(username=username,password=hashpassword).first()            
+                user_obj = Account.query.filter_by(username=username,password=hashpassword).first()            
                 if user_obj:
                     session['username'] = user_obj.username
                     return redirect(url_for('dashboard'))
@@ -54,10 +56,11 @@ def register():
         username = request.form.get('username',None) 
         password = request.form.get('password',None)
         if username and password:
-            user_exists = UserRegistration.query.filter_by(username=username).count()            
+            user_exists = Account.query.filter_by(username=username).count()            
             if not user_exists:
-                encrypt_password = UserRegistration.hashing(password)
-                user_obj = UserRegistration(username,encrypt_password)
+                encrypt_password = Account.hashing(password)
+                iban = uuid.uuid4().int & (1<<64)-1
+                user_obj = Account(username,encrypt_password,100, iban)
                 db.session.add(user_obj)
                 db.session.commit() 
                 session['username'] = user_obj.username
@@ -67,3 +70,17 @@ def register():
         else:
             registerresponse = "You must provide a username and a password"
         return render_template('register.html', registerresponse=registerresponse)
+
+@app.route('/sendtrx',methods=['GET','POST'])
+def send_transaction():
+    if session.get('username'):
+        return render_template('sendtrx.html')
+    return redirect(url_for('login'))
+
+
+@app.route('/logout',methods=['GET','POST'])
+def logout():
+    if session.get('username'):
+        session['username'] = None
+    return redirect(url_for('login'))
+
