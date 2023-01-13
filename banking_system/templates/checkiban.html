@@ -1,0 +1,21 @@
+<html>
+    <head>
+		<title>Banque</title>
+        <link rel="stylesheet" href="static/styles.css">
+    </head>
+    <body>
+        <h2>Check IBAN validity</h2>
+    <div class="container" id="container">
+        <form action="/checkiban" method="post" name="checkiban">
+            <h3>IBAN</h1>
+            <input type="text" placeholder="iban" name="iban"/>
+            <button>Check</button>
+            <p style="color:black">{{checkibanresponse}}</p>
+
+        </form>
+                   
+    </div>
+    <h2><a class="requrl" href="/logout"><u>Logout</u></a></h2>
+    
+    </body>
+</html>

@@ -20,3 +20,17 @@ class Account(db.Model):
         hash = hashlib.md5(db_password.encode())
         hashing_password = hash.hexdigest()             
         return hashing_password
+
+class Transaction(db.Model):    
+    __tablename__ = 'transactions' 
+
+    id = db.Column(db.Integer,primary_key=True)
+    sender_id = db.Column(db.String(20))
+    receiver_iban = db.Column(db.Integer,unique=True)
+    amount = db.Column(db.Integer)
+    description = db.Column(db.String(255))
+    def __init__(self,sender_id,receiver_iban ,amount, description):
+        self.description = description
+        self.sender_id = sender_id
+        self.amount = amount
+        self.receiver_iban = receiver_iban

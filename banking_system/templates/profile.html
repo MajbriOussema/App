@@ -1,0 +1,21 @@
+<html>
+    <head>
+		<title>Banque</title>
+        <link rel="stylesheet" href="static/styles.css">
+    </head>
+    <body>
+        <h2>Customer profile update</h2>
+    <div class="container" id="container">
+        <form action="/profile" method="post" name="updateprofile">
+            <h3>Username</h1>
+            <input type="text" placeholder="iban" name="username"/>
+            <button>Update</button>
+            <p style="color:black">{{updateresponse}}</p>
+
+        </form>
+                   
+    </div>
+    <h2><a class="requrl" href="/logout"><u>Logout</u></a></h2>
+    
+    </body>
+</html>

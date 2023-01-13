@@ -6,13 +6,16 @@
     <body>
         <h2>Customer Dashboard</h2>
     <div class="container" id="container">
+        <h3>IBAN: {{iban}}</h3>
+        <h3>Amount: {{amount}}$</h3>
         <div class="buttons">
-            <a class="butts" href="/trx">Transactions</a>
+            <a class="butts" href="/transactions">Transactions</a>
             <a class="butts" href="/sendtrx">New transaction</a>
+            <a class="butts" href="/checkiban">Check IBAN validity</a>
         </div>
                    
     </div>
-    <h2><a class="requrl" href="/logout"><u>Logout</u></a></h2>
-    
+    <h2><a class="requrl" href="/logout"><u>Logout</u></a> <a class="requrl" href="/profile"><u>Profile</u></a></h2>
+
     </body>
 </html>

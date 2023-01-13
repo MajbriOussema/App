@@ -7,11 +7,13 @@
         <h2>Send a transaction</h2>
     <div class="container" id="container">
         <form action="/sendtrx" method="post" name="sendtrx">
-            <h3>Username</h1>
-            <input type="text" placeholder="username" name="username"/>
-            <h3>Password</h1>
-            <input type="password" placeholder="password" name="password"/>
-            <button>Confirm</button>
+            <h3>Receiver IBAN</h1>
+            <input type="text" placeholder="iban" name="iban"/>
+            <h3>Amount</h1>
+            <input type="number" placeholder="Amount" name="amount"/>
+            <h3>Description</h1>
+            <input type="text" placeholder="Description" name="description"/>
+            <button>Confirm transaction</button>
             <p style="color:black">{{sendtrxresponse}}</p>
 
         </form>

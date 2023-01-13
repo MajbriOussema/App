@@ -2,6 +2,8 @@ from flask import render_template, request, json, Response,flash,redirect,sessio
 from banking_system import app, db
 from flask import url_for
 from banking_system.model import *
+from sqlalchemy.sql import or_,text
+
 import uuid
 
 
@@ -13,7 +15,24 @@ def home():
 @app.route('/dashboard',methods=['GET','POST'])
 def dashboard():
     if session.get('username'):
-        return render_template('dashboard.html')
+        amount = session['amount']
+        iban = session['iban']
+        return render_template('dashboard.html', amount=amount, iban=iban)
+    return redirect(url_for('login'))
+@app.route('/profile',methods=['GET','POST'])
+def profile():
+    if session.get('username'):
+        if request.method == 'GET':
+            return render_template('profile.html')
+        username = request.form.get('username',None)
+        if username:
+            user_obj = Account.query.filter_by(username=session['username']).first()
+            user_obj.username = username
+            db.session.commit()
+            updateresponse = "Username successfully updated"
+        else:
+            updateresponse = "You must provide a username"
+        return render_template('profile.html', updateresponse=updateresponse)
     return redirect(url_for('login'))
 
 @app.route('/login',methods=['GET','POST'])
@@ -35,6 +54,9 @@ def login():
                 user_obj = Account.query.filter_by(username=username,password=hashpassword).first()            
                 if user_obj:
                     session['username'] = user_obj.username
+                    session['id'] = user_obj.id
+                    session['amount'] = user_obj.amount
+                    session['iban'] = user_obj.iban
                     return redirect(url_for('dashboard'))
                 else:
                     loginresponse = "Password is invalid"
@@ -64,6 +86,9 @@ def register():
                 db.session.add(user_obj)
                 db.session.commit() 
                 session['username'] = user_obj.username
+                session['amount'] = user_obj.amount
+                session['iban'] = user_obj.iban
+                session['id'] = user_obj.id
                 return redirect(url_for('dashboard'))
             else:
                 registerresponse = "Username is already present please choose another"
@@ -71,10 +96,56 @@ def register():
             registerresponse = "You must provide a username and a password"
         return render_template('register.html', registerresponse=registerresponse)
 
+@app.route('/transactions',methods=['GET'])
+def get_transactions():
+    if session.get('username'):
+        transactions = Transaction.query.filter(or_(Transaction.sender_id==session['id'], Transaction.receiver_iban==session['iban'])).all()
+        return render_template('transactions.html', transactions=transactions)
+    return redirect(url_for('login'))
+@app.route('/checkiban',methods=['GET','POST'])
+def check_iban():
+    if session.get('username'):
+        if request.method == 'GET':
+            return render_template('checkiban.html')
+        iban = request.form.get('iban',None)
+        if iban:
+            iban_check = Account.query.filter(text("iban='{}'".format(iban))).first()
+            if iban_check:
+                checkibanresponse = "iban does exist"
+            else:
+                checkibanresponse = "iban doesn't exist"
+        else:
+            checkibanresponse = "You must provide an iban "
+        return render_template('checkiban.html', checkibanresponse=checkibanresponse)
+    return redirect(url_for('login'))
 @app.route('/sendtrx',methods=['GET','POST'])
 def send_transaction():
     if session.get('username'):
-        return render_template('sendtrx.html')
+        if request.method == 'GET':
+            return render_template('sendtrx.html')
+        iban = request.form.get('iban',None) 
+        amount = request.form.get('amount',None)
+        description = request.form.get('description',None)
+        if iban and amount and description:
+            user_exists = Account.query.filter_by(iban=iban).count()
+            if user_exists:
+                if amount.isnumeric() and int(amount) <= int(session['amount']):
+                    trx_obj = Transaction(session['id'], iban, amount, description)
+                    rcv = Account.query.filter_by(iban=iban).first()
+                    snd = Account.query.filter_by(id=session['id']).first()
+                    rcv.amount = int(rcv.amount) + int(amount)
+                    snd.amount = int(session['amount']) - int(amount)
+                    session['amount'] = snd.amount
+                    db.session.add(trx_obj)
+                    db.session.commit() 
+                    return redirect(url_for('dashboard'))
+                else:
+                    sendtrxresponse = "you don't have the amount"
+            else:
+                sendtrxresponse = "receiver doesn't exist, please check the IBAN"
+        else:
+            sendtrxresponse = "You must provide an iban and an amount and description"
+        return render_template('sendtrx.html', sendtrxresponse=sendtrxresponse)
     return redirect(url_for('login'))
 
 

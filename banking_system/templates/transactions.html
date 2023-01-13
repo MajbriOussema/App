@@ -1,0 +1,37 @@
+
+{% autoescape false %}
+<html>
+    <head>
+		<title>Banque</title>
+        <link rel="stylesheet" href="static/styles.css">
+    </head>
+    <body>
+        <h2>Transactions</h2>
+    <div class="container" id="container">
+        <table>
+            <tr>
+                <td>ID</td>
+                <td>sender</td>
+                <td>receiver</td>
+                <td>amount</td>
+                <td>description</td>
+            </tr>
+            {% for trx in transactions %}
+            <tr>
+                <td>{{ trx.id}}</td>
+                <td>{{ trx.sender_id}}</td>
+                <td>{{ trx.receiver_iban}}</td>
+                <td>{{ trx.amount}}</td>
+                <td>{{ trx.description}}</td>
+            </tr>
+            {% endfor %}
+
+        </table>
+                   
+    </div>
+    <h2><a class="requrl" href="/logout"><u>Logout</u></a></h2>
+    
+    </body>
+</html>
+
+{% endautoescape %}

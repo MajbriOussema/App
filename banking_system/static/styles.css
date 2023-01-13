@@ -70,6 +70,21 @@ button {
 	transition: transform 80ms ease-in;
 	margin-top: 10px;
 }
+table {
+	border: 1px solid black;
+	background-color: #FFFFFF;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	padding: 0px 50px;
+	height: 100%;
+	text-align: center;
+}
+table,td, tr {
+	border: 1px solid black;
+
+}
 button:active {
 	transform: scale(0.95);
 }
