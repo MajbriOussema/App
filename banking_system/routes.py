@@ -25,9 +25,13 @@ def profile():
         if request.method == 'GET':
             return render_template('profile.html')
         username = request.form.get('username',None)
+        is_admin = request.form.get('is_admin',None)
         if username:
             user_obj = Account.query.filter_by(username=session['username']).first()
             user_obj.username = username
+            session['username'] = username
+            if is_admin == "true":
+                session['is_admin'] = True
             db.session.commit()
             updateresponse = "Username successfully updated"
         else:
@@ -57,6 +61,7 @@ def login():
                     session['id'] = user_obj.id
                     session['amount'] = user_obj.amount
                     session['iban'] = user_obj.iban
+                    session['is_admin'] = False
                     return redirect(url_for('dashboard'))
                 else:
                     loginresponse = "Password is invalid"
@@ -89,6 +94,7 @@ def register():
                 session['amount'] = user_obj.amount
                 session['iban'] = user_obj.iban
                 session['id'] = user_obj.id
+                session['is_admin'] = False
                 return redirect(url_for('dashboard'))
             else:
                 registerresponse = "Username is already present please choose another"
@@ -148,7 +154,30 @@ def send_transaction():
         return render_template('sendtrx.html', sendtrxresponse=sendtrxresponse)
     return redirect(url_for('login'))
 
+@app.route('/admin',methods=['GET','POST'])
+def admin():
+    if session.get('username'):
+        if session['is_admin'] == True:
+            return render_template('admin.html')
+        return redirect(url_for('dashboard'))
+    return redirect(url_for('login'))
 
+@app.route('/admin/getcustomers',methods=['GET','POST'])
+def getcustomers():
+    if session.get('username'):
+        if session['is_admin'] == True:
+            if request.method == 'GET':        
+                return render_template('customers.html',user=None)
+            username = request.form.get('username',None)
+            if username:
+                user = [u.__dict__  for u in Account.query.filter(text("username='{}'".format(username))).all()]
+                searchresponse="success"
+            else:
+                user = None
+                searchresponse="You must provide a username"
+            return render_template('customers.html',searchresponse=searchresponse,user=user)
+        return redirect(url_for('dashboard'))
+    return redirect(url_for('login'))
 @app.route('/logout',methods=['GET','POST'])
 def logout():
     if session.get('username'):

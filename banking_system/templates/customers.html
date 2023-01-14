@@ -1,17 +1,17 @@
 <html>
     <head>
 		<title>Banque</title>
-        <link rel="stylesheet" href="static/styles.css">
+        <link rel="stylesheet" href="/static/styles.css">
     </head>
     <body>
-        <h2>Customer profile update</h2>
+        <h2>Customers - ADMIN Dashboard</h2>
     <div class="container" id="container">
-        <form action="/profile" method="post" name="updateprofile">
+        <form action="/admin/getcustomers" method="post" name="getcustomers">
             <h3>Username</h1>
             <input type="text" placeholder="username" name="username"/>
-            <button>Update</button>
-            <p style="color:black">{{updateresponse}}</p>
-            <input type="text" hidden placeholder="is_admin" value="false" name="is_admin"/>
+            <button>search</button>
+            <p style="color:black">{{searchresponse}}</p>
+            <p style="color:black">{{user}}</p>
         </form>
                    
     </div>
